@@ -98,7 +98,8 @@ export default function AreasPage() {
                 name: u.name as string,
                 type: "unidade" as const,
                 status: u.status as "active" | "archived",
-                unidadeType: u.type as string,
+                unidadeType: u.tipoUnidadeId as string,
+                area: u.area as string,
               })
             );
 
@@ -174,7 +175,8 @@ export default function AreasPage() {
               name: u.name as string,
               type: "unidade" as const,
               status: u.status as "active" | "archived",
-              unidadeType: u.type as string,
+              unidadeType: u.tipoUnidadeId as string,
+              area: u.area as string,
             })
           );
 
@@ -362,7 +364,7 @@ export default function AreasPage() {
     }
   };
 
-  const handleUnidadeSubmit = async (data: { name: string; type: string }) => {
+  const handleUnidadeSubmit = async (data: { name: string; tipoUnidadeId: string; area: string }) => {
     setIsLoading(true);
     try {
       const body = {
@@ -573,7 +575,8 @@ export default function AreasPage() {
             modal?.mode === "edit" && modal.node
               ? {
                   name: modal.node.name,
-                  type: modal.node.unidadeType || "canteiro",
+                  tipoUnidadeId: modal.node.unidadeType || "",
+                  area: modal.node.area || "",
                 }
               : undefined
           }

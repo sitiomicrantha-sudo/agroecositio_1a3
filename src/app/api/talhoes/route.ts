@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { talhoes } from "@/db/schema";
-import { eq, and, count } from "drizzle-orm";
+import { talhoes, properties } from "@/db/schema";
+import { eq, and, count, sql } from "drizzle-orm";
+import { validateAreaFilhos } from "@/lib/limits";
 
 const MAX_TALHOES_POR_PROPRIEDADE = 10;
 
@@ -57,7 +58,27 @@ export async function POST(request: Request) {
       .values({ propertyId, name, area, zonaId })
       .returning();
 
-    return NextResponse.json(newTalhao[0], { status: 201 });
+    const warnings: string[] = [];
+
+    if (area) {
+      const [prop] = await db
+        .select({ totalArea: properties.totalArea })
+        .from(properties)
+        .where(eq(properties.id, propertyId))
+        .limit(1);
+
+      if (prop?.totalArea) {
+        const result = validateAreaFilhos(
+          parseFloat(prop.totalArea),
+          [parseFloat(area)]
+        );
+        if (result.warning) {
+          warnings.push(result.warning);
+        }
+      }
+    }
+
+    return NextResponse.json({ ...newTalhao[0], warnings }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { error: "Erro ao criar talhão" },

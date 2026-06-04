@@ -1,4 +1,4 @@
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Schema Drizzle ORM
 O sistema SHALL definir o schema do banco de dados usando Drizzle ORM com 5 tabelas principais e relações hierárquicas.

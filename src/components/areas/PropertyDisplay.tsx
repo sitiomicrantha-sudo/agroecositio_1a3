@@ -96,7 +96,7 @@ export default function PropertyDisplay({
           />
           <Input
             id="totalArea"
-            label="Área Total (ha)"
+            label="Área Total (m²)"
             type="number"
             step="0.01"
             {...register("totalArea", { required: "Área é obrigatória" })}
@@ -140,7 +140,7 @@ export default function PropertyDisplay({
         </div>
         <div>
           <p className="text-sm text-stone-500">Área Total</p>
-          <p className="text-stone-800">{data.totalArea ? `${data.totalArea} ha` : "—"}</p>
+          <p className="text-stone-800">{data.totalArea ? `${(parseFloat(data.totalArea) / 10000).toFixed(2)} ha` : "—"}</p>
         </div>
         <div>
           <p className="text-sm text-stone-500">Proprietário</p>

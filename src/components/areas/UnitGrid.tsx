@@ -69,6 +69,11 @@ export default function UnitGrid({
                   {unit.unidadeType}
                 </span>
               )}
+              {unit.area && (
+                <span className="text-xs text-stone-500 mt-1 block">
+                  {unit.area} m²
+                </span>
+              )}
               {zonaName && (
                 <p className="text-xs text-stone-400 mt-1">{zonaName}</p>
               )}

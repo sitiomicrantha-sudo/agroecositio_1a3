@@ -16,11 +16,11 @@ O sistema SHALL manter exatamente uma (1) Propriedade no sistema. A Propriedade 
 - **THEN** sistema não exibe opção de criar nova Propriedade, apenas editar a existente
 
 ### Requirement: Hierarquia de Talhões
-O sistema SHALL permitir cadastrar Talhões vinculados à Propriedade. Cada Talhão possui Nome, Área, Zona (referência à constante estática) e Status.
+O sistema SHALL permitir cadastrar Talhões vinculados à Propriedade. Cada Talhão possui Nome, Área (em m²), Zona (referência à constante estática) e Status.
 
 #### Scenario: Criar Talhão
 - **WHEN** usuário clica em "Adicionar Talhão"
-- **THEN** sistema exibe formulário com campos Nome, Área e Zona (dropdown com zonas estáticas) e cria o Talhão vinculado à Propriedade com Status='Ativo'
+- **THEN** sistema exibe formulário com campos Nome, Área (em m²) e Zona (dropdown com zonas estáticas) e cria o Talhão vinculado à Propriedade com Status='active'
 
 #### Scenario: Editar Talhão
 - **WHEN** usuário clica em "Editar" em um Talhão
@@ -35,11 +35,11 @@ O sistema SHALL permitir cadastrar Talhões vinculados à Propriedade. Cada Talh
 - **THEN** sistema exibe todos os Talhões ativos da Propriedade, com badge de Zona colorido
 
 ### Requirement: Hierarquia de Unidades Menores
-O sistema SHALL permitir cadastrar Unidades Menores vinculadas a um Talhão. Cada Unidade possui Nome/Numeração, Tipo (Canteiro, Linha de SAF, Piquete, Galinheiro, Composteira, Estufa, Outro) e Status.
+O sistema SHALL permitir cadastrar Unidades Menores vinculadas a um Talhão. Cada Unidade possui Nome/Numeração, Tipo (via tabela tipos_unidade), Área (em m², opcional) e Status.
 
 #### Scenario: Criar Unidade Menor
 - **WHEN** usuário expande um Talhão e clica em "Adicionar Unidade"
-- **THEN** sistema exibe formulário inline com campos Nome, Tipo (dropdown) e cria a Unidade com Status='Ativo'
+- **THEN** sistema exibe formulário inline com campos Nome, Tipo (dropdown de tipos_unidade), Área (m², opcional) e cria a Unidade com Status='active'
 
 #### Scenario: Adicionar Múltiplas Unidades
 - **WHEN** usuário está no formulário de nova Unidade Menor
@@ -52,6 +52,10 @@ O sistema SHALL permitir cadastrar Unidades Menores vinculadas a um Talhão. Cad
 #### Scenario: Listar Unidades Menores
 - **WHEN** usuário expande um Talhão na Tree View
 - **THEN** sistema exibe todas as Unidades Menores ativas daquele Talhão com seu Tipo
+
+#### Scenario: Select de tipo busca da API
+- **WHEN** formulário de Unidade é exibido
+- **THEN** dropdown de Tipo busca opções da tabela `tipos_unidade` via API
 
 ### Requirement: Soft Delete (Arquivamento)
 O sistema SHALL implementar exclusão lógica (Soft Delete) através do campo Status. Nenhuma área deve ser removida fisicamente do banco de dados.

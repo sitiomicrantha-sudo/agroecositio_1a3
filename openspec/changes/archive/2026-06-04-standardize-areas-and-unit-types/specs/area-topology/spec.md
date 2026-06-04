@@ -1,4 +1,4 @@
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Layout 2 colunas na página Áreas
 O sistema SHALL exibir a estrutura de áreas em layout de 2 colunas: coluna 1 lista Talhões da Propriedade, coluna 2 exibe grade de cards com Unidades Menores do Talhão selecionado.

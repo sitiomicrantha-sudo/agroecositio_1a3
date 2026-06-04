@@ -1,25 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 
-const unidadeTypeOptions = [
-  { value: "canteiro", label: "Canteiro" },
-  { value: "saf_line", label: "Linha de SAF" },
-  { value: "piquete", label: "Piquete" },
-  { value: "galinheiro", label: "Galinheiro" },
-  { value: "composteira", label: "Composteira" },
-  { value: "estufa", label: "Estufa" },
-  { value: "outro", label: "Outro" },
-];
+interface TipoUnidade {
+  id: string;
+  name: string;
+}
 
 interface UnidadeFormData {
   name: string;
-  type: string;
+  tipoUnidadeId: string;
+  area: string;
 }
 
 interface UnidadeFormProps {
@@ -39,6 +35,8 @@ export default function UnidadeForm({
   isLoading = false,
   showAddAnother = true,
 }: UnidadeFormProps) {
+  const [tipos, setTipos] = useState<TipoUnidade[]>([]);
+
   const {
     register,
     handleSubmit,
@@ -47,14 +45,27 @@ export default function UnidadeForm({
   } = useForm<UnidadeFormData>({
     defaultValues: initialData || {
       name: "",
-      type: "canteiro",
+      tipoUnidadeId: "",
+      area: "",
     },
   });
+
+  useEffect(() => {
+    fetch("/api/tipos-unidade")
+      .then((res) => res.json())
+      .then((data) => setTipos(data))
+      .catch(console.error);
+  }, []);
+
+  const tipoOptions = tipos.map((t) => ({
+    value: t.id,
+    label: t.name,
+  }));
 
   const handleAddAnother = () => {
     handleSubmit((data) => {
       onSubmit(data);
-      reset({ name: "", type: "canteiro" });
+      reset({ name: "", tipoUnidadeId: "", area: "" });
       onAddAnother?.();
     })();
   };
@@ -68,11 +79,19 @@ export default function UnidadeForm({
         error={errors.name?.message}
       />
       <Select
-        id="type"
+        id="tipoUnidadeId"
         label="Tipo"
-        options={unidadeTypeOptions}
-        {...register("type", { required: "Tipo é obrigatório" })}
-        error={errors.type?.message}
+        options={tipoOptions}
+        {...register("tipoUnidadeId", { required: "Tipo é obrigatório" })}
+        error={errors.tipoUnidadeId?.message}
+      />
+      <Input
+        id="area"
+        label="Área (m²)"
+        type="number"
+        step="0.01"
+        {...register("area")}
+        error={errors.area?.message}
       />
       <div className="flex gap-3 justify-end">
         <Button type="button" variant="ghost" onClick={onCancel}>

@@ -126,7 +126,12 @@ export default function TreeNode({
             )}
           </div>
           {node.area && (
-            <span className="text-xs text-stone-500">{node.area} ha</span>
+            <span className="text-xs text-stone-500">
+              {node.type === "unidade" 
+                ? `${node.area} m²`
+                : `${(parseFloat(node.area) / 10000).toFixed(2)} ha`
+              }
+            </span>
           )}
         </div>
 

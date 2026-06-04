@@ -19,6 +19,18 @@ const typeLabels = {
   unidade: "Unidade",
 };
 
+function formatArea(area: string, type: "property" | "talhao" | "unidade"): string {
+  const value = parseFloat(area);
+  if (isNaN(value)) return area;
+  
+  if (type === "unidade") {
+    return `${value} m²`;
+  }
+  
+  const ha = value / 10000;
+  return `${ha.toFixed(2)} ha`;
+}
+
 export default function DetailPanel({
   node,
   zonaColor,
@@ -74,7 +86,7 @@ export default function DetailPanel({
         {node.area && (
           <div>
             <p className="text-stone-500">Área</p>
-            <p className="font-medium text-stone-800">{node.area} ha</p>
+            <p className="font-medium text-stone-800">{formatArea(node.area, node.type)}</p>
           </div>
         )}
         {node.unidadeType && (

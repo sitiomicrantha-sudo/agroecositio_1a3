@@ -1,4 +1,4 @@
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Limite de Talhões por Propriedade
 O sistema SHALL permitir no máximo 10 Talhões ativos por Propriedade. A contagem considera apenas Talhões com Status='active'.

@@ -89,7 +89,7 @@ export default function TreeView({
             >
               <span>{property.name}</span>
               {property.location && <span> · {property.location}</span>}
-              {property.totalArea && <span> · {property.totalArea} ha</span>}
+              {property.totalArea && <span> · {(parseFloat(property.totalArea) / 10000).toFixed(2)} ha</span>}
             </div>
           )}
         </div>
@@ -145,7 +145,7 @@ export default function TreeView({
                         </span>
                         {talhao.area && (
                           <span className="text-xs text-stone-500">
-                            {talhao.area} ha
+                            {(parseFloat(talhao.area) / 10000).toFixed(2)} ha
                           </span>
                         )}
                       </div>

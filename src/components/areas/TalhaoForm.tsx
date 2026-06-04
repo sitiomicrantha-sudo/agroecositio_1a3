@@ -67,7 +67,7 @@ export default function TalhaoForm({
       />
       <Input
         id="area"
-        label="Área (ha)"
+        label="Área (m²)"
         type="number"
         step="0.01"
         {...register("area", { required: "Área é obrigatória" })}

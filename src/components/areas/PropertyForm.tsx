@@ -53,7 +53,7 @@ export default function PropertyForm({
       />
       <Input
         id="totalArea"
-        label="Área Total (ha)"
+        label="Área Total (m²)"
         type="number"
         step="0.01"
         {...register("totalArea", { required: "Área é obrigatória" })}
