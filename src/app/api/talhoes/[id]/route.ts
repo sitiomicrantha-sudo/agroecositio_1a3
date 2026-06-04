@@ -38,11 +38,11 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, area } = body;
+    const { name, area, zonaId } = body;
 
     const updated = await db
       .update(talhoes)
-      .set({ name, area, updatedAt: new Date() })
+      .set({ name, area, zonaId, updatedAt: new Date() })
       .where(eq(talhoes.id, id))
       .returning();
 

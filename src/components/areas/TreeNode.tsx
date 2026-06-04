@@ -1,6 +1,16 @@
 "use client";
 
-import { ChevronRight, ChevronDown, Map, Layers, Grid3X3, Home, Pencil, Archive, RotateCcw, Plus } from "lucide-react";
+import {
+  ChevronRight,
+  ChevronDown,
+  Layers,
+  Grid3X3,
+  Home,
+  Pencil,
+  Archive,
+  RotateCcw,
+  Plus,
+} from "lucide-react";
 import { TreeNodeData } from "./TreeView";
 import Button from "@/components/ui/Button";
 
@@ -19,21 +29,18 @@ interface TreeNodeProps {
 
 const typeIcons = {
   property: Home,
-  gleba: Map,
   talhao: Layers,
   unidade: Grid3X3,
 };
 
 const typeLabels = {
   property: "Propriedade",
-  gleba: "Gleba",
   talhao: "Talhão",
   unidade: "Unidade",
 };
 
 const addChildLabels = {
-  property: "Adicionar Gleba",
-  gleba: "Adicionar Talhão",
+  property: "Adicionar Talhão",
   talhao: "Adicionar Unidade",
   unidade: undefined,
 };
@@ -63,38 +70,58 @@ export default function TreeNode({
         }`}
         style={{ paddingLeft: `${level * 24 + 16}px` }}
       >
-        {/* Expand/collapse button */}
         {hasChildren ? (
           <button
             onClick={onToggleExpand}
             className="p-1 text-stone-400 hover:text-stone-600"
           >
-            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {isExpanded ? (
+              <ChevronDown size={16} />
+            ) : (
+              <ChevronRight size={16} />
+            )}
           </button>
         ) : (
           <div className="w-6" />
         )}
 
-        {/* Icon */}
         <Icon
           size={18}
           className={isArchived ? "text-stone-400" : "text-green-600"}
         />
 
-        {/* Name and info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span
               className={`font-medium truncate ${
-                isArchived ? "text-stone-400 line-through" : "text-stone-800"
+                isArchived
+                  ? "text-stone-400 line-through"
+                  : "text-stone-800"
               }`}
             >
               {node.name}
             </span>
-            <span className="text-xs text-stone-400">{typeLabels[node.type]}</span>
+            <span className="text-xs text-stone-400">
+              {typeLabels[node.type]}
+            </span>
             {node.unidadeType && (
               <span className="text-xs text-stone-500 bg-stone-100 px-2 py-0.5 rounded">
                 {node.unidadeType}
+              </span>
+            )}
+            {node.zonaName && node.zonaColor && (
+              <span
+                className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
+                style={{
+                  color: node.zonaColor,
+                  backgroundColor: `${node.zonaColor}15`,
+                }}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: node.zonaColor }}
+                />
+                {node.zonaName}
               </span>
             )}
           </div>
@@ -103,7 +130,6 @@ export default function TreeNode({
           )}
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-1">
           {canAddChild && onAddChild && (
             <Button
@@ -145,7 +171,6 @@ export default function TreeNode({
         </div>
       </div>
 
-      {/* Children */}
       {isExpanded && hasChildren && (
         <div>
           {node.children!.map((child) => (

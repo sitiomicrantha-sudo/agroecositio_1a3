@@ -3,6 +3,7 @@ import {
   uuid,
   text,
   numeric,
+  integer,
   timestamp,
   pgEnum,
 } from "drizzle-orm/pg-core";
@@ -29,14 +30,14 @@ export const properties = pgTable("properties", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const glebas = pgTable("glebas", {
+export const zonas = pgTable("zonas", {
   id: uuid("id").defaultRandom().primaryKey(),
-  propertyId: uuid("property_id")
-    .references(() => properties.id)
-    .notNull(),
   name: text("name").notNull(),
-  area: numeric("area").notNull(),
-  notes: text("notes"),
+  label: text("label").notNull(),
+  description: text("description"),
+  color: text("color").notNull(),
+  icon: text("icon").notNull(),
+  order: integer("order").notNull(),
   status: statusEnum("status").default("active").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -44,8 +45,11 @@ export const glebas = pgTable("glebas", {
 
 export const talhoes = pgTable("talhoes", {
   id: uuid("id").defaultRandom().primaryKey(),
-  glebaId: uuid("gleba_id")
-    .references(() => glebas.id)
+  propertyId: uuid("property_id")
+    .references(() => properties.id)
+    .notNull(),
+  zonaId: uuid("zona_id")
+    .references(() => zonas.id)
     .notNull(),
   name: text("name").notNull(),
   area: numeric("area").notNull(),

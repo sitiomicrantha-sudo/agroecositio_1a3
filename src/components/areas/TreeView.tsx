@@ -2,16 +2,20 @@
 
 import { useState } from "react";
 import TreeNode from "./TreeNode";
+import UnitGrid from "./UnitGrid";
 import FilterToggle from "./FilterToggle";
 
 export interface TreeNodeData {
   id: string;
   name: string;
-  type: "property" | "gleba" | "talhao" | "unidade";
+  type: "property" | "talhao" | "unidade";
   status: "active" | "archived";
   area?: string;
   notes?: string;
   unidadeType?: string;
+  zonaId?: string;
+  zonaName?: string;
+  zonaColor?: string;
   children?: TreeNodeData[];
 }
 
@@ -23,9 +27,22 @@ interface PropertyInfo {
   owner: string;
 }
 
+interface ZonaInfo {
+  id: string;
+  name: string;
+  label: string;
+  color: string;
+  icon: string;
+}
+
 interface TreeViewProps {
   data: TreeNodeData[];
   property?: PropertyInfo | null;
+  zonas?: ZonaInfo[];
+  talhaoCounts?: Record<string, number>;
+  selectedNode?: TreeNodeData | null;
+  selectedTalhao?: TreeNodeData | null;
+  onSelectNode?: (node: TreeNodeData | null) => void;
   onEdit?: (node: TreeNodeData) => void;
   onArchive?: (node: TreeNodeData) => void;
   onReactivate?: (node: TreeNodeData) => void;
@@ -35,29 +52,20 @@ interface TreeViewProps {
 export default function TreeView({
   data,
   property,
+  zonas = [],
+  talhaoCounts = {},
+  selectedNode,
+  selectedTalhao,
+  onSelectNode,
   onEdit,
   onArchive,
   onReactivate,
   onAddChild,
 }: TreeViewProps) {
   const [showArchived, setShowArchived] = useState(true);
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-
-  const toggleExpand = (nodeId: string) => {
-    setExpandedNodes((prev) => {
-      const next = new Set(prev);
-      if (next.has(nodeId)) {
-        next.delete(nodeId);
-      } else {
-        next.add(nodeId);
-      }
-      return next;
-    });
-  };
 
   const filterNodes = (nodes: TreeNodeData[]): TreeNodeData[] => {
     if (showArchived) return nodes;
-
     return nodes
       .filter((node) => node.status === "active")
       .map((node) => ({
@@ -66,7 +74,12 @@ export default function TreeView({
       }));
   };
 
-  const filteredData = filterNodes(data);
+  const filteredTalhoes = filterNodes(data);
+  const selectedTalhaoUnidades = selectedTalhao?.children || [];
+
+  const getZonaForTalhao = (talhao: TreeNodeData) => {
+    return zonas.find((z) => z.id === talhao.zonaId);
+  };
 
   return (
     <div className="space-y-4">
@@ -76,10 +89,13 @@ export default function TreeView({
             Estrutura da Propriedade
           </h2>
           {property && (
-            <div className="mt-1 text-sm text-stone-500" title={`Proprietário: ${property.owner || "—"}`}>
+            <div
+              className="mt-1 text-sm text-stone-500"
+              title={`Proprietário: ${property.owner || "—"}`}
+            >
               <span>{property.name}</span>
-              {property.location && <span> • {property.location}</span>}
-              {property.totalArea && <span> • {property.totalArea} ha</span>}
+              {property.location && <span> · {property.location}</span>}
+              {property.totalArea && <span> · {property.totalArea} ha</span>}
             </div>
           )}
         </div>
@@ -90,28 +106,90 @@ export default function TreeView({
         />
       </div>
 
-      <div className="bg-white border border-stone-200 rounded-xl overflow-hidden">
-        {filteredData.length === 0 ? (
-          <div className="p-8 text-center text-stone-500">
-            Nenhuma área cadastrada
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Coluna 1: Talhões */}
+        <div className="bg-white border border-stone-200 rounded-xl overflow-hidden">
+          <div className="p-3 border-b border-stone-100 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-stone-700">Talhões</h3>
+            {onAddChild && (
+              <button
+                onClick={() => property && onAddChild(property.id, "property")}
+                className="text-xs text-green-600 hover:text-green-700 font-medium"
+              >
+                + Adicionar
+              </button>
+            )}
           </div>
-        ) : (
-          filteredData.map((node) => (
-            <TreeNode
-              key={node.id}
-              node={node}
-              level={0}
-              isExpanded={expandedNodes.has(node.id)}
-              onToggleExpand={() => toggleExpand(node.id)}
-              expandedNodes={expandedNodes}
-              onToggleNode={toggleExpand}
-              onEdit={onEdit}
-              onArchive={onArchive}
-              onReactivate={onReactivate}
-              onAddChild={onAddChild}
+          <div className="divide-y divide-stone-100">
+            {filteredTalhoes.length === 0 ? (
+              <div className="p-6 text-center text-stone-500 text-sm">
+                Nenhum talhão cadastrado
+              </div>
+            ) : (
+              filteredTalhoes.map((talhao) => {
+                const zona = getZonaForTalhao(talhao);
+                return (
+                  <button
+                    key={talhao.id}
+                    onClick={() => onSelectNode?.(talhao)}
+                    className={`w-full p-3 text-left hover:bg-stone-50 transition-colors ${
+                      selectedTalhao?.id === talhao.id
+                        ? "bg-green-50 border-l-2 border-green-600"
+                        : ""
+                    } ${talhao.status === "archived" ? "opacity-50" : ""}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {zona && (
+                          <span
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: zona.color }}
+                          />
+                        )}
+                        <span className="font-medium text-stone-800">
+                          {talhao.name}
+                        </span>
+                        {talhao.area && (
+                          <span className="text-xs text-stone-500">
+                            {talhao.area} ha
+                          </span>
+                        )}
+                      </div>
+                      {zona && (
+                        <span className="text-xs text-stone-400">
+                          {zona.icon} {zona.name}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Coluna 2: Unidades */}
+        <div className="bg-white border border-stone-200 rounded-xl overflow-hidden">
+          <div className="p-3 border-b border-stone-100">
+            <h3 className="text-sm font-medium text-stone-700">
+              {selectedTalhao
+                ? `Unidades — ${selectedTalhao.name}`
+                : "Selecione um talhão"}
+            </h3>
+          </div>
+          {!selectedTalhao ? (
+            <div className="p-6 text-center text-stone-500 text-sm">
+              Selecione um talhão para ver as unidades
+            </div>
+          ) : (
+            <UnitGrid
+              units={selectedTalhaoUnidades}
+              zonaColor={selectedTalhao.zonaColor}
+              zonaName={selectedTalhao.zonaName}
+              onSelect={onSelectNode}
             />
-          ))
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

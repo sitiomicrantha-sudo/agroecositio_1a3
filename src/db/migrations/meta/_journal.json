@@ -1,12 +1,12 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
+  "version": "5",
+  "dialect": "pg",
   "entries": [
     {
       "idx": 0,
       "version": "7",
-      "when": 1780448858871,
-      "tag": "0000_hot_midnight",
+      "when": 1780531515508,
+      "tag": "0000_flat_frank_castle",
       "breakpoints": true
     }
   ]

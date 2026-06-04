@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { talhoes } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, count } from "drizzle-orm";
+
+const MAX_TALHOES_POR_PROPRIEDADE = 10;
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const glebaId = searchParams.get("glebaId");
+    const propertyId = searchParams.get("propertyId");
 
-    if (!glebaId) {
+    if (!propertyId) {
       return NextResponse.json(
-        { error: "glebaId é obrigatório" },
+        { error: "propertyId é obrigatório" },
         { status: 400 }
       );
     }
@@ -18,7 +20,7 @@ export async function GET(request: Request) {
     const allTalhoes = await db
       .select()
       .from(talhoes)
-      .where(eq(talhoes.glebaId, glebaId));
+      .where(eq(talhoes.propertyId, propertyId));
 
     return NextResponse.json(allTalhoes);
   } catch (error) {
@@ -32,11 +34,27 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { glebaId, name, area } = body;
+    const { propertyId, name, area, zonaId } = body;
+
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(talhoes)
+      .where(
+        and(eq(talhoes.propertyId, propertyId), eq(talhoes.status, "active"))
+      );
+
+    if (Number(total) >= MAX_TALHOES_POR_PROPRIEDADE) {
+      return NextResponse.json(
+        {
+          error: `Limite de ${MAX_TALHOES_POR_PROPRIEDADE} talhões por propriedade atingido.`,
+        },
+        { status: 409 }
+      );
+    }
 
     const newTalhao = await db
       .insert(talhoes)
-      .values({ glebaId, name, area })
+      .values({ propertyId, name, area, zonaId })
       .returning();
 
     return NextResponse.json(newTalhao[0], { status: 201 });
