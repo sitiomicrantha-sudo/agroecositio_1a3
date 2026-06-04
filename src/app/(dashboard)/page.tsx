@@ -1,19 +1,14 @@
 "use client";
 
 import Card from "@/components/ui/Card";
-import Skeleton from "@/components/ui/Skeleton";
-import { Cloud, Map, Calendar, TrendingUp } from "lucide-react";
+import { Cloud, Calendar, TrendingUp } from "lucide-react";
+import AreaOverviewCard from "@/components/dashboard/AreaOverviewCard";
 
-const cards = [
+const otherCards = [
   {
     title: "Clima",
     icon: Cloud,
     description: "Dados meteorológicos da propriedade",
-  },
-  {
-    title: "Áreas Ativas",
-    icon: Map,
-    description: "Resumo das áreas em produção",
   },
   {
     title: "Atividades",
@@ -38,7 +33,9 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {cards.map((card) => (
+        <AreaOverviewCard />
+
+        {otherCards.map((card) => (
           <Card key={card.title} className="p-6">
             <div className="flex items-start gap-4">
               <div className="p-3 bg-green-50 rounded-lg">
@@ -50,8 +47,8 @@ export default function DashboardPage() {
                   <p className="text-sm text-stone-500">{card.description}</p>
                 </div>
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
+                  <div className="h-4 w-full bg-stone-100 rounded" />
+                  <div className="h-4 w-3/4 bg-stone-100 rounded" />
                 </div>
               </div>
             </div>
