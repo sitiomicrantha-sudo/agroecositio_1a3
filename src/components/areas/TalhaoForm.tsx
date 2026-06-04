@@ -5,14 +5,7 @@ import { useForm } from "react-hook-form";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
-
-interface Zona {
-  id: string;
-  name: string;
-  label: string;
-  description: string | null;
-  icon: string;
-}
+import { ZONAS, ZONA_OPTIONS } from "@/lib/zonas";
 
 interface TalhaoFormData {
   name: string;
@@ -33,8 +26,7 @@ export default function TalhaoForm({
   onCancel,
   isLoading = false,
 }: TalhaoFormProps) {
-  const [zonas, setZonas] = useState<Zona[]>([]);
-  const [selectedZona, setSelectedZona] = useState<Zona | null>(null);
+  const [selectedZona, setSelectedZona] = useState<{ name: string; description: string | null } | null>(null);
 
   const {
     register,
@@ -52,24 +44,17 @@ export default function TalhaoForm({
   const zonaId = watch("zonaId");
 
   useEffect(() => {
-    fetch("/api/zonas?status=active")
-      .then((res) => res.json())
-      .then((data) => setZonas(data))
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
     if (zonaId) {
-      const zona = zonas.find((z) => z.id === zonaId);
-      setSelectedZona(zona || null);
+      const zona = ZONAS[zonaId as keyof typeof ZONAS];
+      setSelectedZona(zona ? { name: zona.name, description: zona.description } : null);
     } else {
       setSelectedZona(null);
     }
-  }, [zonaId, zonas]);
+  }, [zonaId]);
 
-  const zonaOptions = zonas.map((z) => ({
-    value: z.id,
-    label: `${z.icon} ${z.name} — ${z.label}`,
+  const zonaOptions = ZONA_OPTIONS.map((z) => ({
+    value: z.value,
+    label: z.label,
   }));
 
   return (

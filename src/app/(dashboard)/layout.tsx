@@ -3,13 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Map, Layers, Menu, X, Leaf } from "lucide-react";
+import { Home, Map, Menu, X, Leaf } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
   { name: "Áreas", href: "/areas", icon: Map },
-  { name: "Zonas", href: "/zonas", icon: Layers },
 ];
 
 export default function DashboardLayout({

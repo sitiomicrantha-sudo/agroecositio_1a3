@@ -10,6 +10,7 @@ import DetailPanel from "@/components/areas/DetailPanel";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { Plus } from "lucide-react";
+import { ZONAS } from "@/lib/zonas";
 
 type ModalType = "property" | "talhao" | "unidade" | "archive" | null;
 
@@ -29,26 +30,15 @@ interface PropertyData {
   owner: string;
 }
 
-interface ZonaInfo {
-  id: string;
-  name: string;
-  label: string;
-  color: string;
-  icon: string;
-}
-
 export default function AreasPage() {
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [propertyData, setPropertyData] = useState<PropertyData | null>(null);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [zonas, setZonas] = useState<ZonaInfo[]>([]);
   const [selectedNode, setSelectedNode] = useState<TreeNodeData | null>(null);
   const [selectedTalhao, setSelectedTalhao] = useState<TreeNodeData | null>(null);
   const selectedTalhaoIdRef = useRef<string | null>(null);
   const [talhaoCounts, setTalhaoCounts] = useState<Record<string, number>>({});
-
-  const zonasRef = useRef<ZonaInfo[]>([]);
 
   const findNodeById = (nodes: TreeNodeData[], id: string): TreeNodeData | null => {
     for (const node of nodes) {
@@ -62,25 +52,8 @@ export default function AreasPage() {
   };
 
   useEffect(() => {
-    zonasRef.current = zonas;
-  }, [zonas]);
-
-  useEffect(() => {
     selectedTalhaoIdRef.current = selectedTalhao?.id ?? null;
   }, [selectedTalhao]);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("/api/zonas?status=active");
-        const data = await res.json();
-        setZonas(data);
-      } catch (error) {
-        console.error("Error fetching zonas:", error);
-      }
-    }
-    load();
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -111,9 +84,8 @@ export default function AreasPage() {
 
           for (const talhao of talhoes) {
             if (cancelled) return;
-            const zona = zonasRef.current.find(
-              (z) => z.id === talhao.zonaId
-            );
+            const zonaKey = talhao.zonaId as string;
+            const zona = zonaKey ? ZONAS[zonaKey as keyof typeof ZONAS] : null;
 
             const unidadesRes = await fetch(
               `/api/unidades?talhaoId=${talhao.id}`
@@ -161,7 +133,7 @@ export default function AreasPage() {
     return () => {
       cancelled = true;
     };
-  }, [zonas]);
+  }, []);
 
   const refreshData = async () => {
     try {
@@ -188,9 +160,8 @@ export default function AreasPage() {
         const talhaoNodes: TreeNodeData[] = [];
 
         for (const talhao of talhoes) {
-          const zona = zonasRef.current.find(
-            (z) => z.id === talhao.zonaId
-          );
+          const zonaKey = talhao.zonaId as string;
+          const zona = zonaKey ? ZONAS[zonaKey as keyof typeof ZONAS] : null;
 
           const unidadesRes = await fetch(
             `/api/unidades?talhaoId=${talhao.id}`
@@ -272,6 +243,15 @@ export default function AreasPage() {
       mode: "create",
       parentId,
       parentType,
+    });
+  };
+
+  const handleAddUnit = (talhaoId: string) => {
+    setModal({
+      type: "unidade",
+      mode: "create",
+      parentId: talhaoId,
+      parentType: "talhao",
     });
   };
 
@@ -453,7 +433,8 @@ export default function AreasPage() {
 
   const getZonaForNode = (node: TreeNodeData) => {
     if (node.zonaId) {
-      return zonas.find((z) => z.id === node.zonaId);
+      const zonaKey = node.zonaId as string;
+      return ZONAS[zonaKey as keyof typeof ZONAS] || null;
     }
     return null;
   };
@@ -501,7 +482,6 @@ export default function AreasPage() {
       <TreeView
         data={treeData}
         property={propertyData}
-        zonas={zonas}
         talhaoCounts={talhaoCounts}
         selectedNode={selectedNode}
         selectedTalhao={selectedTalhao}
@@ -510,6 +490,7 @@ export default function AreasPage() {
         onArchive={handleArchive}
         onReactivate={handleReactivate}
         onAddChild={handleAddChild}
+        onAddUnit={handleAddUnit}
       />
 
       {selectedNode && (

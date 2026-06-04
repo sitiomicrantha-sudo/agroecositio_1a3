@@ -8,58 +8,10 @@ const client = postgres(connectionString);
 const db = drizzle(client, { schema });
 
 async function main() {
-  console.log("�️ Limpando banco...");
+  console.log("🗑️ Limpando banco...");
   await db.delete(schema.unidadesMenores);
   await db.delete(schema.talhoes);
   await db.delete(schema.properties);
-  await db.delete(schema.zonas);
-
-  console.log("🌱 Inserindo zonas de permacultura...");
-  const [z1, z2, z3, z4, z5] = await db
-    .insert(schema.zonas)
-    .values([
-      {
-        name: "Zona 1",
-        label: "Uso diário",
-        description: "Horta, composteira, ervas, alimentação d'água",
-        color: "#16A34A",
-        icon: "🌱",
-        order: 1,
-      },
-      {
-        name: "Zona 2",
-        label: "Uso frequente",
-        description: "Pomar, galinheiro, apiário, pequenos animais",
-        color: "#65A30D",
-        icon: "🌿",
-        order: 2,
-      },
-      {
-        name: "Zona 3",
-        label: "Uso menos frequente",
-        description: "Cultivos maiores, pastagem, irrigação por gotejo",
-        color: "#CA8A04",
-        icon: "🌾",
-        order: 3,
-      },
-      {
-        name: "Zona 4",
-        label: "Uso sazonal / coleta",
-        description: "Silvicultura, melíferas, fibras",
-        color: "#EA580C",
-        icon: "🌳",
-        order: 4,
-      },
-      {
-        name: "Zona 5",
-        label: "Natureza intocada",
-        description: "Conservação, observação, regeneração",
-        color: "#0284C7",
-        icon: "🦋",
-        order: 5,
-      },
-    ])
-    .returning();
 
   console.log("🏠 Inserindo propriedade...");
   const [prop] = await db
@@ -76,14 +28,14 @@ async function main() {
   const [t1, t2, t3, t4, t5, t6, t7, t8] = await db
     .insert(schema.talhoes)
     .values([
-      { propertyId: prop.id, zonaId: z1.id, name: "Piquete 1", area: "0.8" },
-      { propertyId: prop.id, zonaId: z1.id, name: "Piquete 2", area: "0.5" },
-      { propertyId: prop.id, zonaId: z2.id, name: "Galinheiro", area: "0.3" },
-      { propertyId: prop.id, zonaId: z2.id, name: "Pomar", area: "0.6" },
-      { propertyId: prop.id, zonaId: z3.id, name: "Lavoura", area: "1.5" },
-      { propertyId: prop.id, zonaId: z5.id, name: "APP Interna", area: "0.5" },
-      { propertyId: prop.id, zonaId: z3.id, name: "Milpa", area: "2.1" },
-      { propertyId: prop.id, zonaId: z5.id, name: "Reserva", area: "4.2" },
+      { propertyId: prop.id, zonaId: "zona_1", name: "Piquete 1", area: "0.8" },
+      { propertyId: prop.id, zonaId: "zona_1", name: "Piquete 2", area: "0.5" },
+      { propertyId: prop.id, zonaId: "zona_2", name: "Galinheiro", area: "0.3" },
+      { propertyId: prop.id, zonaId: "zona_2", name: "Pomar", area: "0.6" },
+      { propertyId: prop.id, zonaId: "zona_3", name: "Lavoura", area: "1.5" },
+      { propertyId: prop.id, zonaId: "zona_5", name: "APP Interna", area: "0.5" },
+      { propertyId: prop.id, zonaId: "zona_3", name: "Milpa", area: "2.1" },
+      { propertyId: prop.id, zonaId: "zona_5", name: "Reserva", area: "4.2" },
     ])
     .returning();
 

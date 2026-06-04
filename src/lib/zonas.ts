@@ -45,8 +45,3 @@ export const ZONA_OPTIONS = [
   { value: "zona_4", label: "Zona 4 — Uso sazonal" },
   { value: "zona_5", label: "Zona 5 — Natureza intocada" },
 ];
-
-export const LIMITES = {
-  GLEBAS_POR_PROPRIEDADE: 3,
-  TALHOES_POR_GLEBA: 10,
-} as const;

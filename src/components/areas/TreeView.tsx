@@ -4,6 +4,7 @@ import { useState } from "react";
 import TreeNode from "./TreeNode";
 import UnitGrid from "./UnitGrid";
 import FilterToggle from "./FilterToggle";
+import { ZONAS } from "@/lib/zonas";
 
 export interface TreeNodeData {
   id: string;
@@ -27,18 +28,9 @@ interface PropertyInfo {
   owner: string;
 }
 
-interface ZonaInfo {
-  id: string;
-  name: string;
-  label: string;
-  color: string;
-  icon: string;
-}
-
 interface TreeViewProps {
   data: TreeNodeData[];
   property?: PropertyInfo | null;
-  zonas?: ZonaInfo[];
   talhaoCounts?: Record<string, number>;
   selectedNode?: TreeNodeData | null;
   selectedTalhao?: TreeNodeData | null;
@@ -47,12 +39,12 @@ interface TreeViewProps {
   onArchive?: (node: TreeNodeData) => void;
   onReactivate?: (node: TreeNodeData) => void;
   onAddChild?: (parentId: string, parentType: string) => void;
+  onAddUnit?: (talhaoId: string) => void;
 }
 
 export default function TreeView({
   data,
   property,
-  zonas = [],
   talhaoCounts = {},
   selectedNode,
   selectedTalhao,
@@ -61,6 +53,7 @@ export default function TreeView({
   onArchive,
   onReactivate,
   onAddChild,
+  onAddUnit,
 }: TreeViewProps) {
   const [showArchived, setShowArchived] = useState(true);
 
@@ -78,7 +71,8 @@ export default function TreeView({
   const selectedTalhaoUnidades = selectedTalhao?.children || [];
 
   const getZonaForTalhao = (talhao: TreeNodeData) => {
-    return zonas.find((z) => z.id === talhao.zonaId);
+    const zonaKey = talhao.zonaId as string;
+    return zonaKey ? ZONAS[zonaKey as keyof typeof ZONAS] : null;
   };
 
   return (
@@ -187,6 +181,7 @@ export default function TreeView({
               zonaColor={selectedTalhao.zonaColor}
               zonaName={selectedTalhao.zonaName}
               onSelect={onSelectNode}
+              onAddUnit={selectedTalhao ? () => onAddUnit?.(selectedTalhao.id) : undefined}
             />
           )}
         </div>
